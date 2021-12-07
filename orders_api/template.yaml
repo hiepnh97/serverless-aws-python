@@ -1,0 +1,70 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  orders_api
+
+  Sample SAM Template for orders_api
+
+Globals:
+  Function:
+    MemorySize: 512
+    Timeout: 30
+    Runtime: python3.9
+    Architectures:
+      - x86_64
+    Environment:
+      Variables:
+        ORDERS_TABLE: !Ref OrdersTable
+
+Resources:
+  OrdersTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: id
+        Type: Number
+  CreateOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: orders/
+      Handler: create.create_order
+      Events:
+        CreateOrders:
+          Type: Api
+          Properties:
+            Path: /orders/
+            Method: POST
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OrdersTable
+  ReadOrdersFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: orders/
+      Handler: read.get_order
+      Events:
+        ReadOrders:
+          Type: Api
+          Properties:
+            Path: /orders/{id}
+            Method: GET
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref OrdersTable
+
+Outputs:
+  CreateOrdersAPI:
+    Description: "API Gateway endpoint URL for creating orders function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders"
+  CreateOrderFunction:
+    Description: "Create Order Lambda Function ARN"
+    Value: !GetAtt CreateOrderFunction.Arn
+  CreateOrderFunctionIamRole:
+    Description: "Create Order Function IAM Role ARN"
+    Value: !GetAtt CreateOrderFunctionRole.Arn
+  ReadOrdersAPI:
+    Description: "API Gateway endpoint URL for get orders"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/orders/{id}"
+  ReadOrdersFunction:
+    Description: "Get Orders Lambda Function"
+    Value: !GetAtt ReadOrdersFunction.Arn
