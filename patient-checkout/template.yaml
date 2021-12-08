@@ -14,6 +14,8 @@ Globals:
     CodeUri: patient_checkout/
 
 Resources:
+  PatientCheckoutDLQ:
+    Type: AWS::SNS::Topic
   PatientCheckoutTopic:
     Type: AWS::SNS::Topic
   PatientCheckoutBucket:
@@ -24,6 +26,10 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: patient_checkout.push_message_to_SNS
+      # MaximumRetryAttempts: 2
+      DeadLetterQueue:
+        Type: SNS
+        TargetArn: !Ref PatientCheckoutDLQ
       Policies:
         - S3ReadPolicy:
             BucketName: !Sub ${AWS::StackName}-${AWS::AccountId}-${AWS::Region}
@@ -47,6 +53,15 @@ Resources:
           Type: SNS
           Properties:
             Topic: !Ref PatientCheckoutTopic
+  ErrorHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: error_handler.error_handler
+      Events:
+        SNSEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref PatientCheckoutDLQ
 
 # Outputs:
 #   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function

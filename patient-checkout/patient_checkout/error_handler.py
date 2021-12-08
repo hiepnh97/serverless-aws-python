@@ -5,6 +5,6 @@ logger = logging.getLogger('patient_checkout')
 logger.setLevel(logging.INFO)
 
 
-def bill_management(event, context):
+def error_handler(event, context):
     message = event['Records'][0]['Sns']['Message']
-    logger.info(f'******* Bill Management - Message: {message}')
+    logger.info(f'******* Error Handler - Message: {message}')
