@@ -11,6 +11,7 @@ Globals:
     Runtime: python3.9
     Architectures:
       - x86_64
+    CodeUri: patient_checkout/
 
 Resources:
   PatientCheckoutTopic:
@@ -22,7 +23,6 @@ Resources:
   PatientCheckoutFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: patient_checkout/
       Handler: patient_checkout.push_message_to_SNS
       Policies:
         - S3ReadPolicy:
@@ -41,7 +41,6 @@ Resources:
   BillManagementFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: patient_checkout/
       Handler: bill_management.bill_management
       Events:
         SNSEvent:

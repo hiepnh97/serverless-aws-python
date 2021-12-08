@@ -1,0 +1,14 @@
+[
+    {
+        "firstName": "Nguyen 2",
+        "middleName": "Hoang 2",
+        "lastName": "Hiep 2",
+        "ssn": "123456789"
+    },
+    {
+        "firstName": "Nguyen 1",
+        "middleName": "Hoang 1",
+        "lastName": "Hiep 1",
+        "ssn": "123456788"
+    }
+]
