@@ -14,6 +14,8 @@ Globals:
     CodeUri: patient_checkout/
 
 Resources:
+  ClaimManagementQueue:
+    Type: AWS::SQS::Queue
   PatientCheckoutDLQ:
     Type: AWS::SNS::Topic
   PatientCheckoutTopic:
@@ -62,6 +64,16 @@ Resources:
           Type: SNS
           Properties:
             Topic: !Ref PatientCheckoutDLQ
+  ClaimManagementFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: claim_management.claim_management
+      Events:
+        ClaimEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ClaimManagementQueue.Arn
+            BatchSize: 10
 
 # Outputs:
 #   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
